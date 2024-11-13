@@ -28,7 +28,7 @@ src/matrix_mul.o: src/matrix_mul.c include/matrix_mul.h
 src/matrix.o: src/matrix.cpp include/matrix.hpp
 	$(CXX) $(CXXFLAGS) $(INCLUDES) -c src/matrix.cpp -o src/matrix.o
 
-src/test.o: src/test.cpp include/matrix.hpp include/matrix_mul.h
+src/test.o: testing/test.cpp include/matrix.hpp include/matrix_mul.h
 	$(CXX) $(CXXFLAGS) $(INCLUDES) -c src/test.cpp -o src/test.o
 
 # Clean
