@@ -5,8 +5,8 @@
 extern "C" {
 
 // Constructor
-static PyObject* PyMathOps_new(PyTypeObject* type, PyObject* args, PyObject* kwargs) {
-    PyMathOps* self = (PyMathOps*)type->tp_alloc(type, 0);
+static PyObject* PyMatrixOps_new(PyTypeObject* type, PyObject* args, PyObject* kwargs) {
+    PyMatrixOps* self = (PyMatrixOps*)type->tp_alloc(type, 0);
     if (self != NULL) {
         double initial_value = 0.0;
         static char* kwlist[] = {"initial_value", NULL};
@@ -18,7 +18,7 @@ static PyObject* PyMathOps_new(PyTypeObject* type, PyObject* args, PyObject* kwa
         }
         
         try {
-            self->cpp_obj = new MathOperations(initial_value);
+            self->cpp_obj = new MatrixOperations(initial_value);
         } catch (const std::exception& e) {
             Py_DECREF(self);
             PyErr_SetString(PyExc_RuntimeError, e.what());
@@ -29,26 +29,12 @@ static PyObject* PyMathOps_new(PyTypeObject* type, PyObject* args, PyObject* kwa
 }
 
 // Destructor
-static void PyMathOps_dealloc(PyMathOps* self) {
+static void PyMatrixOps_dealloc(PyMatrixOps* self) {
     delete self->cpp_obj;
     Py_TYPE(self)->tp_free((PyObject*)self);
 }
 
-// Wrapper for add method
-static PyObject* PyMathOps_add(PyObject* self, PyObject* args) {
-    double x;
-    if (!PyArg_ParseTuple(args, "d", &x)) {
-        return NULL;
-    }
-    
-    try {
-        double result = ((PyMathOps*)self)->cpp_obj->add(x);
-        return PyFloat_FromDouble(result);
-    } catch (const std::exception& e) {
-        PyErr_SetString(PyExc_RuntimeError, e.what());
-        return NULL;
-    }
-}
+
 
 // Wrapper for power method (with keyword arguments)
 static PyObject* PyMathOps_power(PyObject* self, PyObject* args, PyObject* kwargs) {
@@ -70,16 +56,6 @@ static PyObject* PyMathOps_power(PyObject* self, PyObject* args, PyObject* kwarg
     }
 }
 
-// Property getter for current_value
-static PyObject* PyMathOps_get_value(PyObject* self, void* closure) {
-    try {
-        double value = ((PyMathOps*)self)->cpp_obj->get_value();
-        return PyFloat_FromDouble(value);
-    } catch (const std::exception& e) {
-        PyErr_SetString(PyExc_RuntimeError, e.what());
-        return NULL;
-    }
-}
 
 // Method definitions
 static PyMethodDef PyMathOps_methods[] = {
@@ -93,7 +69,7 @@ static PyMethodDef PyMathOps_methods[] = {
 
 // Property definitions
 static PyGetSetDef PyMathOps_getset[] = {
-    {"value", PyMathOps_get_value, NULL, "Current value", NULL},
+    {"value", PyMatrixOps_get_value, NULL, "Current value", NULL},
     {NULL, NULL, NULL, NULL, NULL}
 };
 
@@ -113,27 +89,27 @@ PyTypeObject PyMathOpsType = {
 };
 
 // Module definition
-static PyModuleDef math_module = {
+static PyModuleDef matrixmodule = {
     PyModuleDef_HEAD_INIT,
-    "math_module",
-    "Example module that wraps MathOperations class",
+    "matrixmodule",
+    "Example module that wraps Matrix Operations class",
     -1,
     NULL
 };
 
 // Module initialization
-PyMODINIT_FUNC PyInit_math_module(void) {
+PyMODINIT_FUNC PyInit_matrixmodule(void) {
     PyObject* m;
 
     if (PyType_Ready(&PyMathOpsType) < 0)
         return NULL;
 
-    m = PyModule_Create(&math_module);
+    m = PyModule_Create(&matrixmodule);
     if (m == NULL)
         return NULL;
 
     Py_INCREF(&PyMathOpsType);
-    if (PyModule_AddObject(m, "MathOperations", (PyObject*)&PyMathOpsType) < 0) {
+    if (PyModule_AddObject(m, "MathOperations", (PyObject*)&PyMatrixType) < 0) {
         Py_DECREF(&PyMathOpsType);
         Py_DECREF(m);
         return NULL;

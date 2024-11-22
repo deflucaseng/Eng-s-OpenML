@@ -8,7 +8,7 @@
 typedef struct {
     PyObject_HEAD
     Matrix* cpp_obj;  // Pointer to our C++ instance
-} PyMathOps;
+} PyMatrixOps;
 
 // Declare extern "C" interface
 #ifdef __cplusplus
